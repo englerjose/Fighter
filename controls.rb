@@ -24,17 +24,18 @@ module Fighter
       @keys = [PLAYER1, PLAYER2][num-1]
     end
 
-    def update player1_x, player2_x
+    def update other_player
       if @window.button_down?  @window.char_to_button_id(@keys.key :left)
-        @num == 1 ? @player.move_left : @player.move_left(player1_x)
-        #@player.turn_left @num == 2? player1_x < player2_x : true   #let the character know if it can move in the left direction
+        @player.move_left other_player unless @player.busy?
       elsif @window.button_down?  @window.char_to_button_id(@keys.key :right)
-        @num == 2 ? @player.move_right : @player.move_right(player2_x)
-        #@player.turn_right @num == 1? player1_x < player2_x : true  # #let the character know if it can move in the right direction
+        @player.move_right other_player unless @player.busy?
+      else
+        @player.idle unless @player.busy?
       end
     end
 
     def button_down key
+      return if @player.busy?
       case @keys[key]
       when :left, :right then @player.walking
       when :block then @player.block

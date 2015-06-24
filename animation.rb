@@ -7,8 +7,9 @@ module Fighter
     end
 
     def draw *args
+      @last_time ||= Gosu.milliseconds
       @images[@current_image_index].draw *args
-      next_image if Gosu::milliseconds - @last_time > 180
+      next_image if Gosu::milliseconds - @last_time > 150
     end
 
     def next_image

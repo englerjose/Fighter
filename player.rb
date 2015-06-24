@@ -6,57 +6,40 @@ module Fighter
     SCALE = 3
     STEP_SIZE = 2
     TURN_OFFSET = 100
-    attr_reader :x
+    SEPERATION = 1.0  # Scale of a characters width to distance from other player
 
-    def initialize player_name, window, x, y, flip
+    def initialize player_name, window, x, y, side
       @tileset = TileSet.new player_name, window
       @window = window
       @x, @y = x, y
-      @scale_x = SCALE
-      @flip = flip ? -1 : 1
+      @side = side
+      @seperation = SEPERATION * width
     end
 
-    def move_left left_x_bounds=0
-      return if (@x - width) < left_x_bounds
+    def move_left other_player
+      return if @side == :left && outer_x - STEP_SIZE <= 0
+      return if @side == :right && inner_x - STEP_SIZE <= other_player.inner_x
       @x -= STEP_SIZE
     end
 
-    def move_right right_x_bounds=@window.width
-      return if (@x + width) > right_x_bounds
+    def move_right other_player
+      return if @side == :right && outer_x + STEP_SIZE >= @window.width
+      return if @side == :left && inner_x + STEP_SIZE >= other_player.inner_x
       @x += STEP_SIZE
     end
 
-    def turn_left can_move
-      return if @x < 0
-      if @scale_x > 0
-        @scale_x *= -1
-        #@x += TURN_OFFSET
-      end
-      move unless @x - width < 0 || !can_move
-    end
-
-    def turn_right can_move
-      return if @x > @window.width
-      if @scale_x < 0
-        @scale_x *= -1
-        #@x -= TURN_OFFSET
-      end
-      move unless @x > @window.width - TURN_OFFSET || !can_move
-    end
-
-    def move
-      @x += @scale_x < 0? -STEP_SIZE : STEP_SIZE
-    end
-
     def idle
+      @busy = false
       set_animation :idle
     end
 
     def kick
+      @busy = true
       set_animation(:kick) {  idle  }
     end
 
     def punch
+      @busy = true
       set_animation(:punch) {  idle  }
     end
 
@@ -65,21 +48,41 @@ module Fighter
     end
 
     def block
-      set_animation :block
+      @busy = true
+      set_animation(:block) {  idle  }
     end
 
     def draw
-      @tileset.animation.draw @x, @y, 0, @flip*SCALE, SCALE
+      @tileset.animation.draw @x, @y, 0, scale_x, SCALE
     end
 
     def width
-      @tileset.width
+      @tileset.width*SCALE
+    end
+
+    def busy?
+      return @busy
+    end
+
+    # Returns the x value of the players bounding box closest to the
+    # opposing player
+    def inner_x
+      @side == :left ? @x+width : @x-width
+    end
+
+    def outer_x
+      @x #Note when flipping @x remains the same hence @x is always the outer value
     end
 
     private
       def set_animation animation, &block
         @tileset.animation = @tileset[animation]
         @tileset.animation.play_once &block unless block.nil?
+      end
+
+      def scale_x
+        return SCALE if @side == :left
+        -SCALE if @side == :right
       end
   end
 
