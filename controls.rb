@@ -17,18 +17,18 @@ module Fighter
       '[' => :kick
     }
 
-    def initialize window, player, num
+    def initialize window, player, other_player
       @window = window
       @player = player
-      @num = num
-      @keys = [PLAYER1, PLAYER2][num-1]
+      @other_player = other_player
+      @keys = @player.side == :left ? PLAYER1 : PLAYER2
     end
 
-    def update other_player
+    def update
       if @window.button_down?  @window.char_to_button_id(@keys.key :left)
-        @player.move_left other_player unless @player.busy?
+        @player.move_left @other_player unless @player.busy?
       elsif @window.button_down?  @window.char_to_button_id(@keys.key :right)
-        @player.move_right other_player unless @player.busy?
+        @player.move_right @other_player unless @player.busy?
       else
         @player.idle unless @player.busy?
       end
@@ -39,8 +39,8 @@ module Fighter
       case @keys[key]
       when :left, :right then @player.walking
       when :block then @player.block
-      when :punch then @player.punch
-      when :kick then @player.kick
+      when :punch then @player.punch @other_player
+      when :kick then @player.kick @other_player
       end
     end
   end

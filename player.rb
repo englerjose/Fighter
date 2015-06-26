@@ -5,15 +5,21 @@ module Fighter
 
     SCALE = 3
     STEP_SIZE = 2
-    TURN_OFFSET = 100
-    SEPERATION = 1.0  # Scale of a characters width to distance from other player
+    MAX_HEALTH = 100
+    ATTACKS = {
+      :kick => MAX_HEALTH / 50,
+      :punch => MAX_HEALTH / 25
+    }
+
+    attr_reader :side, :MAX_HEALTH
+    attr_accessor :health
 
     def initialize player_name, window, x, y, side
       @tileset = TileSet.new player_name, window
       @window = window
       @x, @y = x, y
       @side = side
-      @seperation = SEPERATION * width
+      @health = 100
     end
 
     def move_left other_player
@@ -33,14 +39,16 @@ module Fighter
       set_animation :idle
     end
 
-    def kick
+    def kick other_player
       @busy = true
-      set_animation(:kick) {  idle  }
+      set_animation(:kick) { idle  }
+      attack other_player, :kick
     end
 
-    def punch
+    def punch other_player
       @busy = true
-      set_animation(:punch) {  idle  }
+      set_animation(:punch) { idle  }
+      attack other_player, :punch
     end
 
     def walking
@@ -50,6 +58,11 @@ module Fighter
     def block
       @busy = true
       set_animation(:block) {  idle  }
+    end
+
+    def hit
+      @busy = true
+      set_animation(:hit) {  idle  }
     end
 
     def draw
@@ -62,6 +75,24 @@ module Fighter
 
     def busy?
       return @busy
+    end
+
+    def in_range? other_player
+      (inner_x - other_player.inner_x).abs <= STEP_SIZE
+    end
+
+    def blocking?
+      @tileset.animation == @tileset[:block]
+    end
+
+    def attack other_player, move
+      return unless in_range?(other_player) || other_player.blocking?
+      damage = ATTACKS[move]
+      other_player.health -= damage
+    end
+
+    def ko?
+      @health <= 0
     end
 
     # Returns the x value of the players bounding box closest to the
@@ -88,11 +119,12 @@ module Fighter
 
   class TileSet <  Hash
     def initialize player_name, window
-      self[:idle] = Fighter::Animation.new("#{player_name}/idle", window)
-      self[:kick] = Fighter::Animation.new("#{player_name}/kick", window)
-      self[:punch] = Fighter::Animation.new("#{player_name}/punch", window)
-      self[:walking] = Fighter::Animation.new("#{player_name}/walking", window)
-      self[:block] = Fighter::Animation.new("#{player_name}/block", window)
+      self[:idle] = Animation.new("#{player_name}/idle", window)
+      self[:kick] = Animation.new("#{player_name}/kick", window)
+      self[:punch] = Animation.new("#{player_name}/punch", window)
+      self[:walking] = Animation.new("#{player_name}/walking", window)
+      self[:block] = Animation.new("#{player_name}/block", window)
+      self[:hit] = Animation.new("#{player_name}/hit", window)
       @animation = self[:walking]
       @width, @height = @animation.width, @animation.height
     end

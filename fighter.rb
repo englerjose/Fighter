@@ -2,6 +2,7 @@ require 'gosu'
 require_relative 'background.rb'
 require_relative 'player.rb'
 require_relative 'controls.rb'
+require_relative 'overlay.rb'
 
 module Fighter
   class GameWindow < Gosu::Window
@@ -11,15 +12,17 @@ module Fighter
       @background_image = Background.new(self)
       @player1 = Player.new('chun-li', self, 10, height-300, :left)
       @player2 = Player.new('ryu', self, width-100, height-300, :right)
-      @controls1 = Controls.new(self, @player1, 1)
-      @controls2 = Controls.new(self, @player2, 2)
+      @controls1 = Controls.new(self, @player1, @player2)
+      @controls2 = Controls.new(self, @player2, @player1)
+      @overlay = Overlay.new self, @player1, @player2
     end
 
     # Called 60 times a second by default
     # Should contain the main game logic: move objects, handle collisions etc.
     def update
-      @controls1.update @player2
-      @controls2.update @player1
+      @controls1.update
+      @controls2.update
+      @overlay.update
     end
 
     # Called after update and whenever the window needs redrawing for other
@@ -29,9 +32,11 @@ module Fighter
       @background_image.draw
       @player1.draw
       @player2.draw
+      @overlay.draw
     end
 
     def button_down(id)
+      close if id == Gosu::KbEscape
       @controls1.button_down button_id_to_char id
       @controls2.button_down button_id_to_char id
     end

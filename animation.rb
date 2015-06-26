@@ -24,6 +24,10 @@ module Fighter
       @play_once = next_move
     end
 
+    def play_after?
+
+    end
+
     def find_images_matching_pattern pattern
       @image_files = Dir.glob("assets/#{pattern}*").map {  |path| Gosu::Image.new(path)  }
     end
