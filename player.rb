@@ -25,12 +25,14 @@ module Fighter
     end
 
     def move_left other_player
+      return if blocking?
       return if @side == :left && outer_x - STEP_SIZE <= 0
       return if @side == :right && inner_x - STEP_SIZE <= other_player.inner_x
       @x -= STEP_SIZE
     end
 
     def move_right other_player
+      return if blocking?
       return if @side == :right && outer_x + STEP_SIZE >= @window.width
       return if @side == :left && inner_x + STEP_SIZE >= other_player.inner_x
       @x += STEP_SIZE
@@ -62,11 +64,12 @@ module Fighter
     end
 
     def block
-      @busy = true
-      set_animation(:block) {  idle  }
+      puts "blocking"
+      set_animation :block
     end
 
     def hit damage
+      return if blocking?
       @busy = true
       @health -= damage
       set_animation(:hit) {  idle  }

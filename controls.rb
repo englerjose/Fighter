@@ -25,13 +25,15 @@ module Fighter
     end
 
     def update
-      return if @window.gameover?
+      return if @window.gameover? || @player.busy?
       if @window.button_down?  @window.char_to_button_id(@keys.key :left)
-        @player.move_left @other_player unless @player.busy?
+        @player.move_left @other_player
       elsif @window.button_down?  @window.char_to_button_id(@keys.key :right)
-        @player.move_right @other_player unless @player.busy?
+        @player.move_right @other_player
+      elsif @window.button_down? @window.char_to_button_id(@keys.key :block)
+        @player.block
       else
-        @player.idle unless @player.busy?
+        @player.idle
       end
     end
 
@@ -39,7 +41,6 @@ module Fighter
       return if @player.busy? || @window.gameover?
       case @keys[key]
       when :left, :right then @player.walking
-      when :block then @player.block
       when :punch then @player.punch @other_player
       when :kick then @player.kick @other_player
       end
