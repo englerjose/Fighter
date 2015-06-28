@@ -9,11 +9,6 @@ module Fighter
       @time = Gosu::milliseconds
     end
 
-    def update
-      @healthbar1.update
-      @healthbar2.update
-    end
-
     def draw
       case (Gosu::milliseconds-@time)
       when 0..500 then display "3...", Gosu::Color::BLACK
@@ -38,10 +33,6 @@ module Fighter
     def initialize player, window
       @player = player
       @window = window
-    end
-
-    def update
-
     end
 
     def draw

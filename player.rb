@@ -20,6 +20,8 @@ module Fighter
       @x, @y = x, y
       @side = side
       @health = 100
+      @cooldown = rand(100..500)
+      @last_attack = 0
     end
 
     def move_left other_player
@@ -40,11 +42,17 @@ module Fighter
     end
 
     def kick other_player
+      return if Gosu::milliseconds-@last_attack < @cooldown
       @busy = true
       set_animation(:kick) { attack other_player, :kick; idle  }
+      @cooldown = rand(0..1500)
+      @last_attack = Gosu::milliseconds
     end
 
     def punch other_player
+      return if Gosu::milliseconds-@last_attack < @cooldown
+      @cooldown = rand(0..1500)
+      @last_attack = Gosu::milliseconds
       @busy = true
       set_animation(:punch) { attack other_player, :punch; idle  }
     end
@@ -58,8 +66,9 @@ module Fighter
       set_animation(:block) {  idle  }
     end
 
-    def hit
+    def hit damage
       @busy = true
+      @health -= damage
       set_animation(:hit) {  idle  }
     end
 
@@ -85,9 +94,7 @@ module Fighter
 
     def attack other_player, move
       return unless in_range?(other_player) || other_player.blocking?
-      damage = ATTACKS[move]
-      other_player.health -= damage
-      other_player.hit
+      other_player.hit ATTACKS[move]
       @window.gameover if other_player.ko?
     end
 

@@ -22,7 +22,6 @@ module Fighter
     def update
       @controls1.update
       @controls2.update
-      @overlay.update
     end
 
     # Called after update and whenever the window needs redrawing for other
