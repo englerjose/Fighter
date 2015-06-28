@@ -4,7 +4,6 @@ module Fighter
       @window = window
       @player1 = player1
       @player2 = player2
-      @font = Gosu::Font.new(@window, "Droid Serif", 100)
       @healthbar1 = Healthbar.new player1, @window
       @healthbar2 = Healthbar.new player2, @window
       @time = Gosu::milliseconds
@@ -17,19 +16,21 @@ module Fighter
 
     def draw
       case (Gosu::milliseconds-@time)
-      when 0..500 then display "3..."
-      when 500..1000 then display "2..."
-      when 1000..1500 then display "1..."
-      when 2000..2500 then display "Fight!"
+      when 0..500 then display "3...", Gosu::Color::BLACK
+      when 500..1000 then display "2...", Gosu::Color::BLACK
+      when 1000..1500 then display "1...", Gosu::Color::BLACK
+      when 1500..2000 then display "Fight!", Gosu::Color::RED
+      else  @healthbar1.draw
+            @healthbar2.draw
       end
-      @healthbar1.draw
-      @healthbar2.draw
+      display "Game Over!\n[ESC] to exit", Gosu::Color::YELLOW if @window.gameover?
     end
 
     private
     # Print message in the top center of window
-    def display message
-      @font.draw(message, 275, 20, 1)
+    def display message, color
+      image = Gosu::Image.from_text(@window, message, "droid sans", 100, 20, @window.width, :center)
+      image.draw(0, 0, 3, 1, 1, color)
     end
   end
 

@@ -40,6 +40,16 @@ module Fighter
       @controls1.button_down button_id_to_char id
       @controls2.button_down button_id_to_char id
     end
+
+    def gameover
+      @gameover = true
+      @player1.freeze
+      @player2.freeze
+    end
+
+    def gameover?
+      return @gameover
+    end
   end
 end
 

@@ -25,6 +25,7 @@ module Fighter
     end
 
     def update
+      return if @window.gameover?
       if @window.button_down?  @window.char_to_button_id(@keys.key :left)
         @player.move_left @other_player unless @player.busy?
       elsif @window.button_down?  @window.char_to_button_id(@keys.key :right)
@@ -35,7 +36,7 @@ module Fighter
     end
 
     def button_down key
-      return if @player.busy?
+      return if @player.busy? || @window.gameover?
       case @keys[key]
       when :left, :right then @player.walking
       when :block then @player.block

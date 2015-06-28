@@ -7,8 +7,8 @@ module Fighter
     STEP_SIZE = 2
     MAX_HEALTH = 100
     ATTACKS = {
-      :kick => MAX_HEALTH / 50,
-      :punch => MAX_HEALTH / 25
+      :kick => MAX_HEALTH / 10,
+      :punch => MAX_HEALTH / 20
     }
 
     attr_reader :side, :MAX_HEALTH
@@ -41,14 +41,12 @@ module Fighter
 
     def kick other_player
       @busy = true
-      set_animation(:kick) { idle  }
-      attack other_player, :kick
+      set_animation(:kick) { attack other_player, :kick; idle  }
     end
 
     def punch other_player
       @busy = true
-      set_animation(:punch) { idle  }
-      attack other_player, :punch
+      set_animation(:punch) { attack other_player, :punch; idle  }
     end
 
     def walking
@@ -89,10 +87,16 @@ module Fighter
       return unless in_range?(other_player) || other_player.blocking?
       damage = ATTACKS[move]
       other_player.health -= damage
+      other_player.hit
+      @window.gameover if other_player.ko?
     end
 
     def ko?
       @health <= 0
+    end
+
+    def freeze
+      @tileset.animation.freeze!
     end
 
     # Returns the x value of the players bounding box closest to the
