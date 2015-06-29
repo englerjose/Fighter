@@ -64,7 +64,6 @@ module Fighter
     end
 
     def block
-      puts "blocking"
       set_animation :block
     end
 

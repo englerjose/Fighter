@@ -6,6 +6,7 @@ module Fighter
       @player2 = player2
       @healthbar1 = Healthbar.new player1, @window
       @healthbar2 = Healthbar.new player2, @window
+      @gameover = Gosu::Image.from_text(@window, "Game Over!\n[ESC] to exit", "droid sans", 100, 20, @window.width, :center)
       @time = Gosu::milliseconds
     end
 
@@ -18,7 +19,7 @@ module Fighter
       else  @healthbar1.draw
             @healthbar2.draw
       end
-      display "Game Over!\n[ESC] to exit", Gosu::Color::YELLOW if @window.gameover?
+      @gameover.draw(0, 0, 3, 1, 1, Gosu::Color::YELLOW) if @window.gameover?
     end
 
     private
