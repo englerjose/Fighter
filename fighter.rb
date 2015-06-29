@@ -15,7 +15,7 @@ module Fighter
       @controls1 = Controls.new(self, @player1, @player2)
       @controls2 = Controls.new(self, @player2, @player1)
       @overlay = Overlay.new self, @player1, @player2
-      @song = Gosu::Song.new(self, "assets/music.ogg")
+      @song = Gosu::Song.new(self, 'assets/music.ogg')
     end
 
     # Called 60 times a second by default
@@ -49,7 +49,7 @@ module Fighter
     end
 
     def gameover?
-      return @gameover
+      @gameover
     end
   end
 end

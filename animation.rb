@@ -1,19 +1,19 @@
 module Fighter
   class Animation
-    def initialize pattern, window
+    def initialize(pattern, window)
       @images = find_images_matching_pattern pattern
       @current_image_index = 0
       @last_time = 0
     end
 
-    def draw *args
+    def draw(*args)
       @last_time ||= Gosu.milliseconds
       @images[@current_image_index].draw *args
-      next_image if Gosu::milliseconds - @last_time > 150  || @frozen
+      next_image if Gosu::milliseconds - @last_time > 150 || @frozen
     end
 
     def next_image
-      if @play_once && @current_image_index == @images.length-1
+      if @play_once && @current_image_index == @images.length - 1
         @play_once.call
         return
       end
@@ -31,7 +31,7 @@ module Fighter
       @frozen = true
     end
 
-    def find_images_matching_pattern pattern
+    def find_images_matching_pattern(pattern)
       @image_files = Dir.glob("assets/#{pattern}*").map {  |path| Gosu::Image.new(path)  }
     end
 

@@ -7,14 +7,14 @@ module Fighter
     STEP_SIZE = 2
     MAX_HEALTH = 100
     ATTACKS = {
-      :kick => MAX_HEALTH / 10,
-      :punch => MAX_HEALTH / 20
+      kick: MAX_HEALTH / 10,
+      punch: MAX_HEALTH / 20
     }
 
     attr_reader :side, :MAX_HEALTH
     attr_accessor :health
 
-    def initialize player_name, window, x, y, side
+    def initialize(player_name, window, x, y, side)
       @tileset = TileSet.new player_name, window
       @window = window
       @x, @y = x, y
@@ -24,14 +24,14 @@ module Fighter
       @last_attack = 0
     end
 
-    def move_left other_player
+    def move_left(other_player)
       return if blocking?
       return if @side == :left && outer_x - STEP_SIZE <= 0
       return if @side == :right && inner_x - STEP_SIZE <= other_player.inner_x
       @x -= STEP_SIZE
     end
 
-    def move_right other_player
+    def move_right(other_player)
       return if blocking?
       return if @side == :right && outer_x + STEP_SIZE >= @window.width
       return if @side == :left && inner_x + STEP_SIZE >= other_player.inner_x
@@ -43,7 +43,7 @@ module Fighter
       set_animation :idle
     end
 
-    def kick other_player
+    def kick(other_player)
       return if Gosu::milliseconds-@last_attack < @cooldown
       @busy = true
       set_animation(:kick) { attack other_player, :kick; idle  }
@@ -51,7 +51,7 @@ module Fighter
       @last_attack = Gosu::milliseconds
     end
 
-    def punch other_player
+    def punch(other_player)
       return if Gosu::milliseconds-@last_attack < @cooldown
       @cooldown = rand(0..1500)
       @last_attack = Gosu::milliseconds
@@ -67,7 +67,7 @@ module Fighter
       set_animation :block
     end
 
-    def hit damage
+    def hit(damage)
       return if blocking?
       @busy = true
       @health -= damage
@@ -83,10 +83,10 @@ module Fighter
     end
 
     def busy?
-      return @busy
+      @busy
     end
 
-    def in_range? other_player
+    def in_range?(other_player)
       (inner_x - other_player.inner_x).abs <= STEP_SIZE
     end
 
@@ -94,7 +94,7 @@ module Fighter
       @tileset.animation == @tileset[:block]
     end
 
-    def attack other_player, move
+    def attack(other_player, move)
       return unless in_range?(other_player) || other_player.blocking?
       other_player.hit ATTACKS[move]
       @window.gameover if other_player.ko?
@@ -115,23 +115,24 @@ module Fighter
     end
 
     def outer_x
-      @x #Note when flipping @x remains the same hence @x is always the outer value
+      @x # Note when flipping @x remains the same hence @x is always the outer value
     end
 
     private
-      def set_animation animation, &block
-        @tileset.animation = @tileset[animation]
-        @tileset.animation.play_once &block unless block.nil?
-      end
 
-      def scale_x
-        return SCALE if @side == :left
-        -SCALE if @side == :right
-      end
+    def set_animation(animation, &block)
+      @tileset.animation = @tileset[animation]
+      @tileset.animation.play_once(&block) unless block.nil?
+    end
+
+    def scale_x
+      return SCALE if @side == :left
+      -SCALE if @side == :right
+    end
   end
 
-  class TileSet <  Hash
-    def initialize player_name, window
+  class TileSet < Hash
+    def initialize(player_name, window)
       self[:idle] = Animation.new("#{player_name}/idle", window)
       self[:kick] = Animation.new("#{player_name}/kick", window)
       self[:punch] = Animation.new("#{player_name}/punch", window)
@@ -144,6 +145,5 @@ module Fighter
 
     attr_accessor :animation
     attr_reader :width, :height
-
   end
 end

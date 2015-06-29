@@ -1,21 +1,21 @@
 module Fighter
   class Overlay
-    def initialize window, player1, player2
+    def initialize(window, player1, player2)
       @window = window
       @player1 = player1
       @player2 = player2
       @healthbar1 = Healthbar.new player1, @window
       @healthbar2 = Healthbar.new player2, @window
-      @gameover = Gosu::Image.from_text(@window, "Game Over!\n[ESC] to exit", "droid sans", 100, 20, @window.width, :center)
+      @gameover = Gosu::Image.from_text(@window,'Game Over!\n[ESC] to exit', 'droid sans', 100, 20, @window.width, :center)
       @time = Gosu::milliseconds
     end
 
     def draw
       case (Gosu::milliseconds-@time)
-      when 0..500 then display "3...", Gosu::Color::BLACK
-      when 500..1000 then display "2...", Gosu::Color::BLACK
-      when 1000..1500 then display "1...", Gosu::Color::BLACK
-      when 1500..2000 then display "Fight!", Gosu::Color::RED
+      when 0..500 then display '3...', Gosu::Color::BLACK
+      when 500..1000 then display '2...', Gosu::Color::BLACK
+      when 1000..1500 then display '1...', Gosu::Color::BLACK
+      when 1500..2000 then display 'Fight!', Gosu::Color::RED
       else  @healthbar1.draw
             @healthbar2.draw
       end
@@ -23,9 +23,10 @@ module Fighter
     end
 
     private
+
     # Print message in the top center of window
-    def display message, color
-      image = Gosu::Image.from_text(@window, message, "droid sans", 100, 20, @window.width, :center)
+    def display(message, color)
+      image = Gosu::Image.from_text(@window, message, 'droid sans', 100, 20, @window.width, :center)
       image.draw(0, 0, 3, 1, 1, color)
     end
   end

@@ -17,7 +17,7 @@ module Fighter
       '[' => :kick
     }
 
-    def initialize window, player, other_player
+    def initialize(window, player, other_player)
       @window = window
       @player = player
       @other_player = other_player
@@ -37,7 +37,7 @@ module Fighter
       end
     end
 
-    def button_down key
+    def button_down(key)
       return if @player.busy? || @window.gameover?
       case @keys[key]
       when :left, :right then @player.walking
